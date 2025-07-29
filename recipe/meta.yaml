@@ -6,7 +6,7 @@ package:
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: ad6078e2edb6766d1334ec3dee072ac6a7f95b1e32ce10def8ff7f0f02d56589
 
 build:
@@ -37,7 +37,7 @@ test:
     - pytest -v tests
 
 about:
-  home: https://webob.org/
+  home: https://webob.org
   license_file: docs/license.txt
   license: MIT
   license_family: MIT
@@ -49,8 +49,8 @@ about:
     many conveniences for parsing HTTP request and forming HTTP responses. Both
     objects are read/write: as a result, WebOb is also a nice way to create HTTP
     requests and parse HTTP responses.
-  doc_url: https://docs.pylonsproject.org/projects/webob/
-  dev_url: https://github.com/Pylons/webob/
+  doc_url: https://docs.pylonsproject.org/projects/webob
+  dev_url: https://github.com/Pylons/webob
 
 extra:
   recipe-maintainers:
