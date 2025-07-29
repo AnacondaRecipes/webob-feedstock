@@ -19,6 +19,7 @@ requirements:
     - python
     - pip
     - wheel
+    - setuptools
   run:
     - python
     - legacy-cgi >=2.6 # [py>=313]
