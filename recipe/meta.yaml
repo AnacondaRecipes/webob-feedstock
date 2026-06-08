@@ -8,10 +8,14 @@ package:
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 1c963a11f307bc3f624fbab9dde737701eae255f32981b7a5486a88db1767c2b
+  patches:
+    # Python 3.14 increased io.DEFAULT_BUFFER_SIZE; upstream fix pending release
+    # https://github.com/Pylons/webob/commit/447975fe
+    - patches/0001-fix-py314-interrupted-request-test.patch
 
 build:
   skip: true # [py<39]
-  number: 0
+  number: 1
   script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
 
 requirements:

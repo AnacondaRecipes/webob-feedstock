@@ -1,0 +1,47 @@
+--- a/tests/test_in_wsgiref.py
++++ b/tests/test_in_wsgiref.py
+@@ -2,6 +2,7 @@
+ import logging
+ import socket
+ import cgi
++from io import DEFAULT_BUFFER_SIZE
+ 
+ import pytest
+ 
+@@ -15,6 +16,8 @@
+ 
+ log = logging.getLogger(__name__)
+ 
++TARGET_CL = DEFAULT_BUFFER_SIZE * 2
++
+ @pytest.mark.usefixtures("serve")
+ def test_request_reading(serve):
+     """
+@@ -61,7 +64,7 @@
+ 
+ 
+ def _test_app_req_interrupt(env, sr):
+-    target_cl = 100000
++    target_cl = TARGET_CL
+     try:
+         req = Request(env)
+         cl = req.content_length
+@@ -89,7 +92,7 @@
+ def _req_int_readline(req):
+     try:
+         assert req.body_file.readline() == b'a=b\n'
+-    except IOError:
++    except OSError:
+         # too early to detect disconnect
+         raise AssertionError("False disconnect alert")
+     req.body_file.readline()
+@@ -121,7 +124,7 @@
+ _interrupted_req = (
+     "POST %s HTTP/1.0\r\n"
+     "content-type: application/x-www-form-urlencoded\r\n"
+-    "content-length: 100000\r\n"
++    f"content-length: {TARGET_CL}\r\n"
+     "\r\n"
+ )
+-_interrupted_req += 'a=b\nz=' + 'x' * 10000
++_interrupted_req += 'a=b\nz=' + 'x' * DEFAULT_BUFFER_SIZE
