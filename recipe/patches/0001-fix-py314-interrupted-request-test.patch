@@ -1,0 +1,62 @@
+From 447975febec7fc6bb088698bdeaa151bf5028a86 Mon Sep 17 00:00:00 2001
+From: Delta Regeer <bertjw@regeer.org>
+Date: Sun, 15 Mar 2026 13:08:24 -0600
+Subject: [PATCH] Python 3.14 updated the DEFAULT_BUFFER_SIZE to be larger
+
+This broke the test that assumed it would be 8192. Fix things so that
+the tests now correctly test things again.
+
+Backported from https://github.com/Pylons/webob/commit/447975fe for 1.8.10.
+---
+ tests/test_in_wsgiref.py | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/tests/test_in_wsgiref.py b/tests/test_in_wsgiref.py
+--- a/tests/test_in_wsgiref.py
++++ b/tests/test_in_wsgiref.py
+@@ -2,6 +2,7 @@
+ import logging
+ import socket
+ import cgi
++from io import DEFAULT_BUFFER_SIZE
+ 
+ import pytest
+ 
+@@ -15,6 +16,9 @@
+ 
+ log = logging.getLogger(__name__)
+ 
++TARGET_CL = DEFAULT_BUFFER_SIZE * 2
++
++
+ @pytest.mark.usefixtures("serve")
+ def test_request_reading(serve):
+     """
+@@ -61,7 +65,7 @@
+ 
+ 
+ def _test_app_req_interrupt(env, sr):
+-    target_cl = 100000
++    target_cl = TARGET_CL
+     try:
+         req = Request(env)
+         cl = req.content_length
+@@ -89,7 +93,7 @@
+ def _req_int_readline(req):
+     try:
+         assert req.body_file.readline() == b'a=b\n'
+-    except IOError:
++    except OSError as exc:
+         # too early to detect disconnect
+         raise AssertionError("False disconnect alert")
+     req.body_file.readline()
+@@ -121,7 +125,7 @@
+ _interrupted_req = (
+     "POST %s HTTP/1.0\r\n"
+     "content-type: application/x-www-form-urlencoded\r\n"
+-    "content-length: 100000\r\n"
++    f"content-length: {TARGET_CL}\r\n"
+     "\r\n"
+ )
+-_interrupted_req += 'a=b\nz=' + 'x' * 10000
++_interrupted_req += 'a=b\nz=' + 'x' * DEFAULT_BUFFER_SIZE
